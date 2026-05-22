@@ -100,9 +100,9 @@ export function CatechumenForm() {
       if (photoFile) fd.append('photo', photoFile);
       if (birthCertFile) fd.append('birth_certificate', birthCertFile);
       if (id) {
-        await api.fetch('/catechumens/' + id, { method: 'PUT', body: fd });
+        await api.catechumens.update(id, fd);
       } else {
-        await api.fetch('/catechumens', { method: 'POST', body: fd });
+        await api.catechumens.create(fd);
       }
       navigate('/catechumens');
     } catch (err) {
