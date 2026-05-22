@@ -539,6 +539,27 @@ router.get('/api/stats', async (req, res) => {
   sendJSON(res, 200, { total, totalReportCards, totalSubjects, totalSacraments, catechumensByYear, sacraments: sacramentsCount, activities });
 });
 
+function mimeType(filePath: string): string {
+  const ext = path.extname(filePath).toLowerCase();
+  const map: Record<string, string> = {
+    '.html': 'text/html', '.htm': 'text/html',
+    '.js': 'text/javascript', '.mjs': 'text/javascript', '.cjs': 'text/javascript',
+    '.ts': 'text/javascript', '.tsx': 'text/javascript', '.jsx': 'text/javascript',
+    '.css': 'text/css',
+    '.json': 'application/json',
+    '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg',
+    '.gif': 'image/gif', '.svg': 'image/svg+xml', '.webp': 'image/webp',
+    '.ico': 'image/x-icon',
+    '.woff': 'font/woff', '.woff2': 'font/woff2', '.ttf': 'font/ttf', '.otf': 'font/otf', '.eot': 'application/vnd.ms-fontobject',
+    '.pdf': 'application/pdf',
+    '.map': 'application/json',
+    '.txt': 'text/plain', '.xml': 'text/xml',
+    '.mp4': 'video/mp4', '.webm': 'video/webm',
+    '.mp3': 'audio/mpeg', '.wav': 'audio/wav',
+  };
+  return map[ext] || 'application/octet-stream';
+}
+
 async function serveStatic(dir: string, req: IncomingMessage, res: ServerResponse): Promise<boolean> {
   const pathname = parsePath(req.url || '/');
   const filePath = path.join(dir, pathname);
@@ -546,19 +567,11 @@ async function serveStatic(dir: string, req: IncomingMessage, res: ServerRespons
   try {
     const stat = await fs.stat(filePath);
     if (stat.isFile()) {
-      const ext = path.extname(filePath).toLowerCase();
-      const mime: Record<string, string> = {
-        '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css',
-        '.json': 'application/json', '.png': 'image/png', '.jpg': 'image/jpeg',
-        '.jpeg': 'image/jpeg', '.gif': 'image/gif', '.svg': 'image/svg+xml',
-        '.ico': 'image/x-icon', '.woff': 'font/woff', '.woff2': 'font/woff2',
-        '.pdf': 'application/pdf',
-      };
       const content = await fs.readFile(filePath);
       if (pathname.startsWith('/storage/uploads')) {
         res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
       }
-      res.writeHead(200, { 'Content-Type': mime[ext] || 'application/octet-stream' });
+      res.writeHead(200, { 'Content-Type': mimeType(filePath) });
       res.end(content);
       return true;
     }
@@ -599,25 +612,8 @@ async function startServer() {
     }
 
     if (viteMiddleware) {
-      // Vite dev middleware
-      viteMiddleware(req, res, async () => {
-        // Vite didn't handle, try dist
-        if (process.env.NODE_ENV === 'production') {
-          const distPath = path.join(process.cwd(), 'dist');
-          const served = await serveStatic(distPath, req, res);
-          if (!served) {
-            const indexPath = path.join(distPath, 'index.html');
-            try {
-              const content = await fs.readFile(indexPath);
-              res.writeHead(200, { 'Content-Type': 'text/html' });
-              res.end(content);
-            } catch {
-              sendJSON(res, 404, { error: 'Not found' });
-            }
-          }
-        } else {
-          sendJSON(res, 404, { error: 'Not found' });
-        }
+      viteMiddleware(req, res, () => {
+        sendJSON(res, 404, { error: 'Not found' });
       });
     } else {
       // Production: serve dist
