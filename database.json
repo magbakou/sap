@@ -1,0 +1,51 @@
+{
+  "users": [
+    {
+      "id": "-y2XrkwfCzmUggegisW4K",
+      "name": "admin",
+      "email": "admin@essai.com",
+      "password": "$2b$10$6LgYmLk9/geShhLv8C.ADekrdIESe4A09T304bwsGazPYQ8ASxiD.",
+      "role": "admin",
+      "created_at": "2026-04-21T11:40:48.357Z"
+    },
+    {
+      "id": "2gFHE6_lVfo24eCWDFVSk",
+      "name": "essai",
+      "email": "essaie@essai.com",
+      "password": "$2b$10$eQmOngjEEdzJkjysOVjsLuFx.EWWbeQCM3FhswUMlCo0SUdo/wwY.",
+      "role": "catechist",
+      "created_at": "2026-04-21T11:42:09.610Z"
+    }
+  ],
+  "catechumens": [],
+  "sacraments": [],
+  "subjects": [
+    {
+      "id": "1",
+      "name": "Catéchèse"
+    },
+    {
+      "id": "2",
+      "name": "Doctrine"
+    },
+    {
+      "id": "3",
+      "name": "Morale"
+    },
+    {
+      "id": "4",
+      "name": "Liturgie"
+    },
+    {
+      "id": "5",
+      "name": "Vie de Saint"
+    },
+    {
+      "id": "S5gzIx4i7REWJaGP8DsFB",
+      "name": "maths",
+      "created_at": "2026-04-21T11:41:39.940Z"
+    }
+  ],
+  "report_cards": [],
+  "grades": []
+}
